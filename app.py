@@ -46,7 +46,8 @@ def forecast(city: str):
 
     if type(weather_data) == dict:
         weather_dict = {
-            f'{weather_data["list"][0]["weather"][0]["main"].lower()}': f'{weather_data["list"][0]["weather"][0]["description"]}',
+            f'{weather_data["list"][0]["weather"][0]["main"].lower()}':
+                f'{weather_data["list"][0]["weather"][0]["description"]}',
             'humidity': f'{weather_data["list"][0]["main"]["humidity"]}%',
             'pressure': f'{weather_data["list"][0]["main"]["pressure"]} hPa',
             'temperature': f'{weather_data["list"][0]["main"]["temp"]}C',
