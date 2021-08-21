@@ -1,13 +1,15 @@
 from flask import Flask, jsonify, render_template, request
 from dotenv import load_dotenv
+from requests.exceptions import HTTPError
 import requests
 import os
+
 
 load_dotenv()
 app = Flask(__name__)
 
 
-def get_weather(city: str) -> dict:
+def get_weather(city: str):
     """
     Make a call to the OpenWeatherMap api by retrieving the API_KEY and using the city.
     :param city: a string object that represents the city to query weather data for.
@@ -15,10 +17,13 @@ def get_weather(city: str) -> dict:
     """
     api_key = os.environ.get('API_KEY')
     url = 'https://api.openweathermap.org/data/2.5/forecast?'
-    response = requests.get(f'{url}q={city}&APPID={api_key}&units=metric')
-    response.raise_for_status()
-    print(response.json())
-    return response.json()
+
+    try:
+        response = requests.get(f'{url}q={city}&APPID={api_key}&units=metric')
+        response.raise_for_status()
+        return response.json()
+    except HTTPError as error:
+        return error
 
 
 @app.route('/ping')
@@ -38,13 +43,21 @@ def ping():
 @app.route('/forecast/<city>')
 def forecast(city: str):
     weather_data = get_weather(city)
-    weather_dict = {
-        f'{weather_data["list"][0]["weather"][0]["main"].lower()}': f'{weather_data["list"][0]["weather"][0]["description"]}',
-        'humidity': f'{weather_data["list"][0]["main"]["humidity"]}%',
-        'pressure': f'{weather_data["list"][0]["main"]["pressure"]} hPa',
-        'temperature': f'{weather_data["list"][0]["main"]["temp"]}C',
-    }
-    return jsonify(weather_dict)
+
+    if type(weather_data) == dict:
+        weather_dict = {
+            f'{weather_data["list"][0]["weather"][0]["main"].lower()}': f'{weather_data["list"][0]["weather"][0]["description"]}',
+            'humidity': f'{weather_data["list"][0]["main"]["humidity"]}%',
+            'pressure': f'{weather_data["list"][0]["main"]["pressure"]} hPa',
+            'temperature': f'{weather_data["list"][0]["main"]["temp"]}C',
+        }
+        return jsonify(weather_dict)
+    elif '404' in str(weather_data):
+        error = {
+            "error": f"cannot find the city'{city}'",
+            "error_code": "country_not_found"
+        }
+        return jsonify(error)
 
 
 if __name__ == '__main__':
