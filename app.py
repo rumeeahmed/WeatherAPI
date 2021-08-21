@@ -8,9 +8,16 @@ app = Flask(__name__)
 
 
 def get_weather(city: str) -> dict:
+    """
+    Make a call to the OpenWeatherMap api by retrieving the API_KEY and using the city.
+    :param city: a string object that represents the city to query weather data for.
+    :return: a dictionary object containing the response from the OpenWeatherMap api.
+    """
     api_key = os.environ.get('API_KEY')
     url = 'https://api.openweathermap.org/data/2.5/forecast?'
     response = requests.get(f'{url}q={city}&APPID={api_key}')
+    response.raise_for_status()
+    return response.json()
 
 
 @app.route('/ping')
