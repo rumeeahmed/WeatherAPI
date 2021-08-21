@@ -9,21 +9,41 @@ load_dotenv()
 app = Flask(__name__)
 
 
-def get_weather(city: str):
+def get_weather(city: str, units: str):
     """
     Make a call to the OpenWeatherMap api by retrieving the API_KEY and using the city.
+    :param units: the unit type for the request. `standard` for Kelvin, `metric` for Celsius and `imperial` for
+    Fahrenheit.
     :param city: a string object that represents the city to query weather data for.
     :return: a dictionary object containing the response from the OpenWeatherMap api.
     """
+    if not units:
+        units = 'metric'
+
     api_key = os.environ.get('API_KEY')
     url = 'https://api.openweathermap.org/data/2.5/forecast?'
 
     try:
-        response = requests.get(f'{url}q={city}&APPID={api_key}&units=metric')
+        response = requests.get(f'{url}q={city}&APPID={api_key}&units={units}')
         response.raise_for_status()
-        return response.json()
+        return response.json(), units
     except HTTPError as error:
         return error
+
+
+def check_unit(unit: str):
+    """
+    Check value of the unit and return the correct unit notation for the temperature.
+    :param unit: the unit type for the request. `standard` for Kelvin, `metric` for Celsius and `imperial` for
+    Fahrenheit.
+    :return: a string object.
+    """
+    if unit == 'metric':
+        return 'C'
+    elif unit == 'imperial':
+        return 'F'
+    else:
+        return 'K'
 
 
 @app.route('/ping')
@@ -42,7 +62,14 @@ def ping():
 
 @app.route('/forecast/<city>')
 def forecast(city: str):
-    weather_data = get_weather(city)
+
+    try:
+        units = request.args['unit']
+    except KeyError:
+        units = None
+
+    weather_data, query_units = get_weather(city, units)
+    temp = check_unit(units)
 
     if type(weather_data) == dict:
         weather_dict = {
@@ -50,7 +77,7 @@ def forecast(city: str):
                 f'{weather_data["list"][0]["weather"][0]["description"]}',
             'humidity': f'{weather_data["list"][0]["main"]["humidity"]}%',
             'pressure': f'{weather_data["list"][0]["main"]["pressure"]} hPa',
-            'temperature': f'{weather_data["list"][0]["main"]["temp"]}C',
+            'temperature': f'{str(weather_data["list"][0]["main"]["temp"]) + temp}',
         }
         return jsonify(weather_dict)
     elif '404' in str(weather_data):
