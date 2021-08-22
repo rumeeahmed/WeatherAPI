@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, request
+from requests.exceptions import HTTPError
 from dotenv import load_dotenv
 from requests.exceptions import HTTPError
 import requests
@@ -17,8 +18,6 @@ def get_weather(city: str, units: str):
     :param city: a string object that represents the city to query weather data for.
     :return: a dictionary object containing the response from the OpenWeatherMap api.
     """
-    if not units:
-        units = 'metric'
 
     api_key = os.environ.get('API_KEY')
     url = 'https://api.openweathermap.org/data/2.5/forecast?'
@@ -71,6 +70,11 @@ def forecast(city: str):
     weather_data, query_units = get_weather(city, units)
     temp = check_unit(units)
 
+    error = {
+        'error': '',
+        'error_code': ''
+    }
+
     if type(weather_data) == dict:
         weather_dict = {
             f'{weather_data["list"][0]["weather"][0]["main"].lower()}':
@@ -80,6 +84,7 @@ def forecast(city: str):
             'temperature': f'{str(weather_data["list"][0]["main"]["temp"]) + temp}',
         }
         return jsonify(weather_dict)
+
     elif '404' in str(weather_data):
         error = {
             "error": f"cannot find the city'{city}'",
