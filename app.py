@@ -1,16 +1,15 @@
 from flask import Flask, jsonify, request
 from requests.exceptions import HTTPError
 from dotenv import load_dotenv
-from requests.exceptions import HTTPError
+from datetime import datetime
 import requests
 import os
-
 
 load_dotenv()
 app = Flask(__name__)
 
 
-def get_weather(city: str, units: str):
+def get_weather(city: str, units='standard'):
     """
     Make a call to the OpenWeatherMap api by retrieving the API_KEY and using the city.
     :param units: the unit type for the request. `standard` for Kelvin, `metric` for Celsius and `imperial` for
@@ -27,7 +26,7 @@ def get_weather(city: str, units: str):
         response.raise_for_status()
         return response.json(), units
     except HTTPError as error:
-        return error
+        return error, units
 
 
 def check_unit(unit: str):
@@ -61,14 +60,16 @@ def ping():
 
 @app.route('/forecast/<city>')
 def forecast(city: str):
+    units = request.args.get('unit', '').casefold()
 
-    try:
-        units = request.args['unit']
-    except KeyError:
-        units = None
+    date_raw = request.args.get('at')
+    if date_raw:
+        date = datetime.strptime(date_raw, '%Y-%m-%d')
+    else:
+        date = datetime.utcnow()
 
     weather_data, query_units = get_weather(city, units)
-    temp = check_unit(units)
+    temp = check_unit(query_units)
 
     error = {
         'error': '',
@@ -86,11 +87,14 @@ def forecast(city: str):
         return jsonify(weather_dict)
 
     elif '404' in str(weather_data):
-        error = {
-            "error": f"cannot find the city'{city}'",
-            "error_code": "country_not_found"
-        }
-        return jsonify(error)
+        error['error'] = f'cannot find the city"{city}"'
+        error['error_code'] = 'city_not_found'
+        return jsonify(error), 404
+
+    else:
+        error['error'] = 'Something went wrong'
+        error['error_code'] = 'internal_server_error'
+        return jsonify(error), 500
 
 
 if __name__ == '__main__':
