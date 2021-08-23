@@ -1,9 +1,8 @@
-from dotenv import load_dotenv, find_dotenv
 from requests.exceptions import HTTPError
 from flask_restful import Resource
-from flask import jsonify, request
 from dateutil.parser import parse
 from datetime import datetime
+from flask import request
 import requests
 import pytz
 import os
