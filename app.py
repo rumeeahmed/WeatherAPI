@@ -44,6 +44,23 @@ def check_unit(unit: str):
         return 'K'
 
 
+def find_index(weather_data: dict, date: datetime) -> int:
+    """
+    Find the index position of where the datetime is in the weather data, if no time information is provided in the
+    query parameters then return an index of 0.
+    :param weather_data: the json response from the OpenWeatherMap API.
+    :param date: the date entered in the query parameter.
+    :return: an integer value representing the index of where the weather query for a particular time.
+    """
+    weather_list = weather_data['list']
+    for index, weather in enumerate(weather_list):
+        print(index)
+        if weather['dt_txt'] == date.strftime('%Y-%m-%d %H:%M:%S'):
+            return index
+        else:
+            return 0
+
+
 @app.route('/ping')
 def ping():
     """
