@@ -10,7 +10,7 @@ import os
 
 class Forecast(Resource):
     """
-    Object that handles the 'ping' endpoint
+    Object that handles the 'forecast' endpoint
     """
     def get(self, city: str):
         """
@@ -30,19 +30,14 @@ class Forecast(Resource):
         else:
             date = datetime.now().replace(hour=12, minute=0, second=0, microsecond=0, tzinfo=pytz.UTC)
 
-        # Based on the date check the index of the weather that corresponds with the date in the weather response.
-        index = self.find_index(weather_data, date)
-
         # Prepare the error response.
-        error = {
+        self.error = {
             'error': '',
             'error_code': ''
         }
 
-        if date < datetime.utcnow().replace(tzinfo=pytz.UTC):
-            error['error'] = f'{date}: is in the past'
-            error['error_code'] = 'invalid_date'
-            return jsonify(error), 400
+        if self.check_date(date):
+            return self.error
 
         if type(weather_data) == dict:
             # Based on the date check the index of the weather that corresponds with the date in the weather response.
@@ -57,14 +52,14 @@ class Forecast(Resource):
             return weather_dict, 200
 
         elif '404' in str(weather_data):
-            error['error'] = f'cannot find the city"{city}"'
-            error['error_code'] = 'city_not_found'
-            return error, 404
+            self.error['error'] = f'cannot find the city"{city}"'
+            self.error['error_code'] = 'city_not_found'
+            return self.error, 404
 
         else:
-            error['error'] = 'Something went wrong'
-            error['error_code'] = 'internal_server_error'
-            return error, 500
+            self.error['error'] = 'Something went wrong'
+            self.error['error_code'] = 'internal_server_error'
+            return self.error, 500
 
     @staticmethod
     def get_weather(city: str, units='standard'):
@@ -75,7 +70,6 @@ class Forecast(Resource):
         :param city: a string object that represents the city to query weather data for.
         :return: a dictionary object containing the response from the OpenWeatherMap api.
         """
-        load_dotenv(find_dotenv())
         api_key = os.environ.get('API_KEY')
         url = 'https://api.openweathermap.org/data/2.5/forecast?'
 
@@ -112,8 +106,13 @@ class Forecast(Resource):
         """
         weather_list = weather_data['list']
         for index, weather in enumerate(weather_list):
-            print(index)
             if weather['dt_txt'] == date.strftime('%Y-%m-%d %H:%M:%S'):
                 return index
             else:
                 return 0
+
+    def check_date(self, date: datetime):
+        if date < datetime.utcnow().replace(tzinfo=pytz.UTC):
+            self.error['error'] = f'{date}: is in the past'
+            self.error['error_code'] = 'invalid_date'
+            return True
