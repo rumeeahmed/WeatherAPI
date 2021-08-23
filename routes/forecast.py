@@ -46,6 +46,8 @@ class Forecast(Resource):
             return jsonify(error), 400
 
         if type(weather_data) == dict:
+            # Based on the date check the index of the weather that corresponds with the date in the weather response.
+            index = self.find_index(weather_data, date)
             weather_dict = {
                 f'{weather_data["list"][index]["weather"][0]["main"].lower()}':
                     f'{weather_data["list"][index]["weather"][0]["description"]}',
@@ -53,17 +55,17 @@ class Forecast(Resource):
                 'pressure': f'{weather_data["list"][index]["main"]["pressure"]} hPa',
                 'temperature': f'{str(weather_data["list"][index]["main"]["temp"]) + temp}',
             }
-            return jsonify(weather_dict)
+            return weather_dict, 200
 
         elif '404' in str(weather_data):
             error['error'] = f'cannot find the city"{city}"'
             error['error_code'] = 'city_not_found'
-            return jsonify(error), 404
+            return error, 404
 
         else:
             error['error'] = 'Something went wrong'
             error['error_code'] = 'internal_server_error'
-            return jsonify(error), 500
+            return error, 500
 
     @staticmethod
     def get_weather(city: str, units='standard'):
