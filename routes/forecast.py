@@ -23,12 +23,15 @@ class Forecast(Resource):
         weather_data, query_units = self.get_weather(city, units)
         temp = self.check_unit(query_units)
 
-        # Get the date from the request if no date is provided use the current date.
+        # Get the date from the request if no date is provided use the current date and time.
         date_raw = request.args.get('at', )
         if date_raw:
             date = parse(date_raw).replace(tzinfo=pytz.UTC)
         else:
-            date = datetime.now().replace(hour=12, minute=0, second=0, microsecond=0, tzinfo=pytz.UTC)
+            now = datetime.now()
+            date = datetime.now().replace(
+                hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond, tzinfo=pytz.UTC
+            )
 
         # Prepare the error response.
         self.error = {
@@ -37,7 +40,7 @@ class Forecast(Resource):
         }
 
         if self.check_date(date):
-            return self.error
+            return self.error, 400
 
         if type(weather_data) == dict:
             # Based on the date check the index of the weather that corresponds with the date in the weather response.
