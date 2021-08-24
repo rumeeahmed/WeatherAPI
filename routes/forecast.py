@@ -112,8 +112,7 @@ class Forecast(Resource):
         for index, weather in enumerate(weather_list):
             if weather['dt_txt'] == date.strftime('%Y-%m-%d %H:%M:%S'):
                 return index
-            else:
-                return 0
+        return 0
 
     def check_date(self, date: datetime) -> bool:
         """
