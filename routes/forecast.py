@@ -62,13 +62,14 @@ class Forecast(Resource):
             return self.error, 500
 
     @staticmethod
-    def get_weather(city: str, units='standard'):
+    def get_weather(city: str, units='standard') -> tuple:
         """
         Make a call to the OpenWeatherMap api by retrieving the API_KEY and using the city.
         :param units: the unit type for the request. `standard` for Kelvin, `metric` for Celsius and `imperial` for
         Fahrenheit.
         :param city: a string object that represents the city to query weather data for.
-        :return: a dictionary object containing the response from the OpenWeatherMap api.
+        :return: a tuple that contains either a dictionary object with the weather data or a HTTP error and the unit
+        query parameter.
         """
         api_key = os.environ.get('API_KEY')
         url = 'https://api.openweathermap.org/data/2.5/forecast?'
@@ -81,7 +82,7 @@ class Forecast(Resource):
             return error, units
 
     @staticmethod
-    def check_unit(unit: str):
+    def check_unit(unit: str) -> str:
         """
         Check value of the unit and return the correct unit notation for the temperature.
         :param unit: the unit type for the request. `standard` for Kelvin, `metric` for Celsius and `imperial` for
@@ -111,7 +112,12 @@ class Forecast(Resource):
             else:
                 return 0
 
-    def check_date(self, date: datetime):
+    def check_date(self, date: datetime) -> bool:
+        """
+        Check if the date from the query parameter is an old date.
+        :param date: a datetime object.
+        :return: a boolean value that indicates whether the date is old.
+        """
         if date < datetime.utcnow().replace(tzinfo=pytz.UTC):
             self.error['error'] = f'{date}: is in the past'
             self.error['error_code'] = 'invalid_date'
