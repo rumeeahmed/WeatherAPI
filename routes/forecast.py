@@ -24,9 +24,16 @@ class Forecast(Resource):
         temp = self.check_unit(query_units)
 
         # Get the date from the request if no date is provided use the current date and time.
-        date_raw = request.args.get('at', )
+        date_raw = request.args.get('at')
         if date_raw:
-            date = parse(date_raw).replace(tzinfo=pytz.UTC)
+            # Two date formats are allow an aware and naive date. If no time info has been given use the current time.
+            try:
+                date = datetime.strptime(date_raw, '%Y-%m-%dT%H:%M:%S%z')
+            except ValueError:
+                now = datetime.now()
+                date = datetime.strptime(date_raw, '%Y-%m-%d').replace(
+                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond, tzinfo=pytz.UTC
+                )
         else:
             now = datetime.now()
             date = datetime.now().replace(
