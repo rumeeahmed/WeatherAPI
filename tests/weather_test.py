@@ -53,3 +53,13 @@ class ForecastTest(unittest.TestCase):
         data = response.json()
         temperature = data['temperature']
         self.assertEqual(temperature[-1], 'F')
+
+    def test_kelvin_unit(self):
+        """
+        Test the response when the unit is set to nothing, the temperature should be in Kelvin.
+        :return: None
+        """
+        response = self.get('London')
+        data = response.json()
+        temperature = data['temperature']
+        self.assertEqual(temperature[-1], 'K')
