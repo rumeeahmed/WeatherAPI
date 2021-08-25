@@ -1,8 +1,7 @@
-import pytz
 import unittest
 import requests
 from requests import Response
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class ForecastTest(unittest.TestCase):
@@ -83,9 +82,28 @@ class ForecastTest(unittest.TestCase):
         response = self.get('London', date=date)
         self.assertEqual(response.status_code, 200)
 
+    def test_date_time(self):
+        """
+        Test the response when a datetime string is given.
+        :return: None
+        """
+        # Get the current timezone and current date.
+        timezone = datetime.now().astimezone().tzinfo
+        now = datetime.now(tz=timezone)
+
+        # Add 10 minutes to the current date to ensure that that time is slightly in the future so the previous date
+        # error is not triggered.
+        minutes = timedelta(minutes=10)
+        now += minutes
+
+        # Get the string representation of the date to use to make the request.
+        date = now.strftime('%Y-%m-%dT%H:%M:%S%z')
+        response = self.get('London', 'metric', date=date)
+        self.assertEqual(response.status_code, 200)
+
     def test_server_error(self):
         """
-        Test the server for a internal server error by sending an invalid datetime string.
+        Test the response for a internal server error by sending an invalid datetime string.
         :return: None
         """
         response = self.get('London', 'metric', '2021-08-25T19:33:0x0+00:00')
