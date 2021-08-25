@@ -27,6 +27,17 @@ class ForecastTest(unittest.TestCase):
         else:
             return requests.get(f'{url}/{city}?unit={units}&at={date}')
 
+    @staticmethod
+    def get_current_time() -> datetime:
+        """
+        Get the current time with the current timezone information.
+        :return: a timezone aware datetime object.
+        """
+        timezone = datetime.now().astimezone().tzinfo
+        now = datetime.now(tz=timezone)
+        return now
+
+
     def test_city(self):
         """
         Test the forecast with just the City parameter.
@@ -87,9 +98,7 @@ class ForecastTest(unittest.TestCase):
         Test the response when a datetime string is given.
         :return: None
         """
-        # Get the current timezone and current date.
-        timezone = datetime.now().astimezone().tzinfo
-        now = datetime.now(tz=timezone)
+        now = self.get_current_time()
 
         # Add 10 minutes to the current date to ensure that that time is slightly in the future so the previous date
         # error is not triggered.
@@ -100,6 +109,20 @@ class ForecastTest(unittest.TestCase):
         date = now.strftime('%Y-%m-%dT%H:%M:%S%z')
         response = self.get('London', 'metric', date=date)
         self.assertEqual(response.status_code, 200)
+
+    def test_previous_date(self):
+        """
+        Test the response when an old date is given.
+        :return: None
+        """
+        now = self.get_current_time()
+        day = timedelta(days=1)
+        now -= day
+        # Get the string representation of the date to use to make the request.
+        date = now.strftime('%Y-%m-%dT%H:%M:%S%z')
+        response = self.get('London', 'metric', date=date).json()
+
+        self.assertEqual(response['error_code'], 'invalid_date')
 
     def test_server_error(self):
         """
