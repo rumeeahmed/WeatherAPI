@@ -16,14 +16,15 @@ class ForecastTest(unittest.TestCase):
         :param date: a string object that represents the date to get weather from.
         :return: a Response object.
         """
+        url = 'http://127.0.0.1:5005/forecast'
         if not date and not units:
-            return requests.get(f'http://127.0.0.1:5005/forecast/{city}')
+            return requests.get(f'{url}/{city}')
         elif units and not date:
-            return requests.get(f'http://127.0.0.1:5005/forecast/{city}?unit={units}')
+            return requests.get(f'{url}/{city}?unit={units}')
         elif date and not units:
-            return requests.get(f'http://127.0.0.1:5005/forecast/{city}?at={date}')
+            return requests.get(f'{url}/{city}?at={date}')
         else:
-            return requests.get(f'http://127.0.0.1:5005/forecast/{city}?unit={units}&at={date}')
+            return requests.get(f'{url}/{city}?unit={units}&at={date}')
 
     def test_city(self):
         """
