@@ -37,7 +37,6 @@ class ForecastTest(unittest.TestCase):
         now = datetime.now(tz=timezone)
         return now
 
-
     def test_city(self):
         """
         Test the forecast with just the City parameter.
