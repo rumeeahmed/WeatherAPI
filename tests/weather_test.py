@@ -1,3 +1,4 @@
+import pytz
 import unittest
 import requests
 from requests import Response
@@ -81,3 +82,11 @@ class ForecastTest(unittest.TestCase):
         date = datetime.now().strftime('%Y-%m-%d')
         response = self.get('London', date=date)
         self.assertEqual(response.status_code, 200)
+
+    def test_server_error(self):
+        """
+        Test the server for a internal server error by sending an invalid datetime string.
+        :return: None
+        """
+        response = self.get('London', 'metric', '2021-08-25T19:33:0x0+00:00')
+        self.assertEqual(response.status_code, 500)
