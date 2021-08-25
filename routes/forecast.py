@@ -25,7 +25,8 @@ class Forecast(Resource):
 
         # Get the date from the request if no date is provided use the current date and time.
         date_raw = request.args.get('at')
-        print(date_raw)
+        self.timezone = datetime.now().astimezone().tzinfo
+
         if date_raw:
             # Two date formats are allow an aware and naive date. If no time info has been given use the current time.
             try:
@@ -33,12 +34,13 @@ class Forecast(Resource):
             except ValueError:
                 now = datetime.now()
                 date = datetime.strptime(date_raw, '%Y-%m-%d').replace(
-                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond, tzinfo=pytz.UTC
+                    hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond,
+                    tzinfo=self.timezone
                 )
         else:
             now = datetime.now()
             date = datetime.now().replace(
-                hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond, tzinfo=pytz.UTC
+                hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond, tzinfo=self.timezone
             )
 
         # Prepare the error response.
@@ -128,7 +130,9 @@ class Forecast(Resource):
         :param date: a datetime object.
         :return: a boolean value that indicates whether the date is old.
         """
-        if date < datetime.utcnow().replace(tzinfo=pytz.UTC):
+        print(date)
+        print(datetime.now().replace(tzinfo=self.timezone))
+        if date < datetime.now().replace(tzinfo=self.timezone):
             self.error['error'] = f'{date}: is in the past'
             self.error['error_code'] = 'invalid_date'
             return True
