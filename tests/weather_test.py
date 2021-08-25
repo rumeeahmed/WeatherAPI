@@ -33,3 +33,14 @@ class ForecastTest(unittest.TestCase):
         """
         response = self.get('London')
         self.assertEqual(response.status_code, 200)
+
+    def test_celsius_unit(self):
+        """
+        Test the response when the unit is set to metric, the temperature should be in Celsius.
+        :return: None
+        """
+        response = self.get('London', 'metric')
+        data = response.json()
+        temperature = data['temperature']
+        self.assertEqual(temperature[-1], 'C')
+
