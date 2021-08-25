@@ -26,5 +26,9 @@ class ForecastTest(unittest.TestCase):
             return requests.get(f'http://127.0.0.1:5005/forecast/{city}?unit={units}&at={date}')
 
     def test_city(self):
+        """
+        Test the forecast with just the City parameter.
+        :return: None
+        """
         response = self.get('London')
         self.assertEqual(response.status_code, 200)
