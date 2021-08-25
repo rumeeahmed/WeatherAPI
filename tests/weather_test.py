@@ -34,6 +34,14 @@ class ForecastTest(unittest.TestCase):
         response = self.get('London')
         self.assertEqual(response.status_code, 200)
 
+    def test_false_city(self):
+        """
+        Test the forecast with a city that does not exist.
+        :return: None
+        """
+        response = self.get('Winterfell')
+        self.assertEqual(response.status_code, 404)
+
     def test_celsius_unit(self):
         """
         Test the response when the unit is set to metric, the temperature should be in Celsius.
