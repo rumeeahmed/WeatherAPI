@@ -44,3 +44,12 @@ class ForecastTest(unittest.TestCase):
         temperature = data['temperature']
         self.assertEqual(temperature[-1], 'C')
 
+    def test_fahrenheit_unit(self):
+        """
+        Test the response when the unit is set to imperial, the temperature should be in Fahrenheit.
+        :return: None
+        """
+        response = self.get('London', 'imperial')
+        data = response.json()
+        temperature = data['temperature']
+        self.assertEqual(temperature[-1], 'F')
