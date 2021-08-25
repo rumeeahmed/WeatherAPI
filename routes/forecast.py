@@ -5,6 +5,7 @@ from flask import request
 import requests
 import pytz
 import os
+from dateutil.parser import isoparse
 
 
 class Forecast(Resource):
@@ -24,10 +25,11 @@ class Forecast(Resource):
 
         # Get the date from the request if no date is provided use the current date and time.
         date_raw = request.args.get('at')
+        print(date_raw)
         if date_raw:
             # Two date formats are allow an aware and naive date. If no time info has been given use the current time.
             try:
-                date = datetime.strptime(date_raw, '%Y-%m-%dT%H:%M:%S%z')
+                date = isoparse(date_raw.replace(' ', '+'))
             except ValueError:
                 now = datetime.now()
                 date = datetime.strptime(date_raw, '%Y-%m-%d').replace(
