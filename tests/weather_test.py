@@ -1,6 +1,7 @@
 import unittest
 import requests
 from requests import Response
+from datetime import datetime
 
 
 class ForecastTest(unittest.TestCase):
@@ -71,3 +72,12 @@ class ForecastTest(unittest.TestCase):
         data = response.json()
         temperature = data['temperature']
         self.assertEqual(temperature[-1], 'K')
+
+    def test_date(self):
+        """
+        Test a response with a date.
+        :return: None
+        """
+        date = datetime.now().strftime('%Y-%m-%d')
+        response = self.get('London', date=date)
+        self.assertEqual(response.status_code, 200)

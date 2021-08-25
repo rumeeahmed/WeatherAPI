@@ -1,6 +1,5 @@
 from requests.exceptions import HTTPError
 from flask_restful import Resource
-from dateutil.parser import parse
 from datetime import datetime
 from flask import request
 import requests
