@@ -3,7 +3,6 @@ from flask_restful import Resource
 from datetime import datetime
 from flask import request
 import requests
-import pytz
 import os
 from dateutil.parser import isoparse
 
