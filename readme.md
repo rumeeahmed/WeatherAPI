@@ -2,7 +2,7 @@
 
 This a HTTP service that provides an API to get a weather forecast for a given city, written in `Flask` and
 `OpenWeatherMap` as the data source. An API key from this service is required to use this weather service.
-
+The service up and running on Heroku and the url is `https://rumeeweather.herokuapp.com` 
 ---
 
 # Usage
@@ -31,5 +31,5 @@ The units in the data returned can be configured through the optional `unit` que
 `standard` which returns data in Kelvin, `metric` which returns data in Celsius and `imperial` which returns
 data in Fahrenheit.
 
-A date and datetime can be specified to query the weather, this must follow from 3 hour increment starting 
-from 12pm. It will accept a date, a naive datetime and an aware datetime.
+A date and datetime can be specified to query the weather, the time must follow from 3 hour increment starting 
+from 12am and must be a time that is in the future from now. It will accept a date on its own or an aware datetime.
