@@ -48,7 +48,7 @@ class Forecast(Resource):
             'error_code': ''
         }
 
-        if self.check_date(date):
+        if self.check_past_date(date):
             return self.error, 400
 
         if type(weather_data) == dict:
@@ -123,14 +123,18 @@ class Forecast(Resource):
                 return index
         return 0
 
-    def check_date(self, date: datetime) -> bool:
+    def check_past_date(self, date: datetime) -> bool:
         """
         Check if the date from the query parameter is an old date.
         :param date: a datetime object.
         :return: a boolean value that indicates whether the date is old.
         """
-        date += timedelta(minutes=10)
-        if date < datetime.now().replace(tzinfo=self.timezone):
-            self.error['error'] = f'{date}: is in the past'
-            self.error['error_code'] = 'invalid_date'
-            return True
+        try:
+            date += timedelta(minutes=10)
+            if date < datetime.now().replace(tzinfo=self.timezone):
+                self.error['error'] = f'{date}: is in the past'
+                self.error['error_code'] = 'invalid_date'
+                return True
+        # Above will fail with a date without any time information is passed through.
+        except TypeError:
+            pass
