@@ -1,6 +1,5 @@
 from system_base import SystemBase
 from datetime import datetime, timedelta
-from api import app
 
 
 class ForecastTest(SystemBase):
@@ -103,8 +102,12 @@ class ForecastTest(SystemBase):
         :return: None
         """
         date = datetime.now().strftime('%Y-%m-%d')
-        response = self.get('London', date=date)
-        self.assertEqual(response.status_code, 200)
+        with self.test_client() as test_client:
+            response = test_client.get(f'/forecast/London?units=metric&at={date}')
+            self.assertEqual(
+                200, response.status_code,
+                f'Expected the response status code to be 200, got {response.status_code} instead.'
+            )
 
     def test_date_time(self) -> None:
         """
