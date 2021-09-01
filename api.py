@@ -12,4 +12,4 @@ api.add_resource(Ping, '/ping')
 api.add_resource(Forecast, '/forecast/<city>')
 
 if __name__ == '__main__':
-    app.run(debug=False, port=5005)
+    app.run(debug=True, port=5005)
