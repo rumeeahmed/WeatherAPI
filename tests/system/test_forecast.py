@@ -141,9 +141,12 @@ class ForecastTest(SystemBase):
         with self.test_client() as test_client:
             response = test_client.get(f'/forecast/London?units=metric&at={date}').json
 
-        self.assertEqual(response['error_code'], 'invalid_date')
+        self.assertEqual(
+            'invalid_date', response['error_code'],
+            f'Expected the the JSON to return `invalid_date`, got {response["error_code"]} instead'
+        )
 
-    def test_server_error(self):
+    def test_server_error(self) -> None:
         """
         Test the response for a internal server error by sending an invalid datetime string.
         :return: None
