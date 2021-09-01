@@ -1,7 +1,7 @@
 from requests.exceptions import HTTPError
 from dateutil.parser import isoparse
 from flask_restful import Resource
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import request
 import requests
 import os
@@ -129,6 +129,7 @@ class Forecast(Resource):
         :param date: a datetime object.
         :return: a boolean value that indicates whether the date is old.
         """
+        date += timedelta(minutes=10)
         if date < datetime.now().replace(tzinfo=self.timezone):
             self.error['error'] = f'{date}: is in the past'
             self.error['error_code'] = 'invalid_date'
