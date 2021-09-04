@@ -1,20 +1,11 @@
-from resources.forecast import Forecast
-from unittest import TestCase
+from tests.base import BaseTest
 from datetime import datetime
-import api
 
 
-class TestForecast(TestCase):
+class TestForecast(BaseTest):
     """
     Object that handles the `integration` test for the `Forecast` route.
     """
-    def setUp(self) -> None:
-        """
-        Initialise each test by creating a new instance of the Forecast object.
-        :return: None
-        """
-        self.resource = Forecast()
-
     def test_get_weather_success_response(self) -> None:
         """
         Test the response of a successful call of the `get_weather` method in the Forecast Resource object.

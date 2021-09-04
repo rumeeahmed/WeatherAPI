@@ -1,0 +1,15 @@
+from resources.forecast import Forecast
+from unittest import TestCase
+import api
+
+
+class BaseTest(TestCase):
+    """
+    Object that handles tests for integration and unit tests.
+    """
+    def setUp(self) -> None:
+        """
+        Initialise each test by creating a new instance of the Forecast object.
+        :return: None
+        """
+        self.resource = Forecast()
