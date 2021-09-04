@@ -157,7 +157,7 @@ class ForecastTest(SystemBase):
         with self.test_client() as test_client:
             response = test_client.get('/forecast/London?units=metric&at=2021-08-25T19:33:0x0+00:00')
 
-        self.assertEqual(
-            500, response.status_code,
-            f'Expected the response status code to be 500, got {response.status_code} instead.'
-        )
+            self.assertEqual(
+                500, response.status_code,
+                f'Expected the response status code to be 500, got {response.status_code} instead.'
+            )
