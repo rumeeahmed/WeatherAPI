@@ -1,8 +1,8 @@
-from flask import Flask
-from flask_restful import Api
-from routes.forecast import Forecast
-from routes.ping import Ping
+from resources.forecast import Forecast
+from resources.ping import Ping
 from dotenv import load_dotenv
+from flask_restful import Api
+from flask import Flask
 
 app = Flask(__name__)
 api = Api(app)
