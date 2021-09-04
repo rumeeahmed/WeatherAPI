@@ -1,5 +1,6 @@
 from resources.forecast import Forecast
 from unittest import TestCase
+from datetime import datetime
 import api
 
 
@@ -13,3 +14,8 @@ class BaseTest(TestCase):
         :return: None
         """
         self.resource = Forecast()
+        self.resource.timezone = datetime.now().astimezone().tzinfo
+        self.resource.error = {
+            'error': '',
+            'error_code': ''
+        }

@@ -1,5 +1,5 @@
+from datetime import datetime, timedelta
 from tests.base import BaseTest
-from datetime import datetime
 
 
 class TestForecast(BaseTest):
@@ -66,3 +66,25 @@ class TestForecast(BaseTest):
         now = datetime.now()
         index = self.resource.find_index(data, now)
         self.assertEqual(0, index, f'Expected the index to be 0, got {index} instead.')
+
+    def test_old_date(self) -> None:
+        """
+        Test the 'check_past_date' method in the Forecast Resource. Place an old date in and the return value should be
+        True.
+        :return: None
+        """
+        now = datetime.now().replace(tzinfo=self.resource.timezone)
+        now -= timedelta(minutes=30)
+        past_date = self.resource.check_past_date(now)
+        self.assertIsNotNone(past_date, 'Expected the return value to be None.')
+
+    def test_future_date(self) -> None:
+        """
+        Test the 'check_past_date' method in the Forecast Resource. Place an datetime in future and the return value
+        should be None.
+        :return: None
+        """
+        now = datetime.now().replace(tzinfo=self.resource.timezone)
+        now + timedelta(minutes=10)
+        past_date = self.resource.check_past_date(now)
+        self.assertIsNone(past_date, 'Expected the return value to be not None.')
