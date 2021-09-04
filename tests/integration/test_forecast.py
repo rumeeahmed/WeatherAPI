@@ -1,5 +1,6 @@
-from unittest import TestCase
 from resources.forecast import Forecast
+from unittest import TestCase
+from datetime import datetime
 import api
 
 
@@ -21,6 +22,7 @@ class TestForecast(TestCase):
         """
         response = self.resource.get_weather('London', 'metric')
         data, unit = response
+
         self.assertIsInstance(
             response, tuple, f'Expected to the response to be a tuple object but is instead {type(response)}.'
         )
@@ -39,7 +41,7 @@ class TestForecast(TestCase):
         """
         response = self.resource.get_weather('Winterfell', 'metric')
         data, unit = response
-        print(data.response.status_code)
+
         self.assertIsInstance(
             response, tuple, f'Expected to the response to be a tuple object but is instead {type(response)}.'
         )
@@ -50,3 +52,14 @@ class TestForecast(TestCase):
         self.assertEqual(
             'metric', unit, f'Expected the units to be metric, got {unit} instead.'
         )
+
+    def test_find_false_index(self) -> None:
+        """
+        Test the `find_index` method in the Forecast Resource object but with a datetime that does not match the
+        response data from the OpenWeatherMapAPI, the expected index should be 0.
+        :return: None
+        """
+        data, _ = self.resource.get_weather('London')
+        now = datetime.now()
+        index = self.resource.find_index(data, now)
+        self.assertEqual(0, index, f'Expected the index to be 0, got {index} instead.')
