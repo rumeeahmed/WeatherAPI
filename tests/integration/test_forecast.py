@@ -53,6 +53,18 @@ class TestForecast(TestCase):
             'metric', unit, f'Expected the units to be metric, got {unit} instead.'
         )
 
+    def test_find_true_index(self) -> None:
+        """
+        Test the `find_index` method in the Forecast Resource object but with a datetime that does match the
+        response data from the OpenWeatherMapAPI, the expected index should be 1.
+        :return: None
+        """
+        data, _ = self.resource.get_weather('London')
+        date_raw = data['list'][1]['dt_txt']
+        date = datetime.strptime(date_raw, '%Y-%m-%d %H:%M:%S')
+        index = self.resource.find_index(data, date)
+        self.assertEqual(1, index, f'Expected the index to be 1, got {index} instead.')
+
     def test_find_false_index(self) -> None:
         """
         Test the `find_index` method in the Forecast Resource object but with a datetime that does not match the
