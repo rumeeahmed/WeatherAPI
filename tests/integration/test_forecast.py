@@ -38,7 +38,7 @@ class TestForecast(BaseTest):
         )
         self.assertEqual(
             404, data.response.status_code
-            , f'Expected the code inside the data returned to be 200, got {data.response.status_code} instead.'
+            , f'Expected the code inside the data returned to be 404, got {data.response.status_code} instead.'
         )
         self.assertEqual(
             'metric', unit, f'Expected the units to be metric, got {unit} instead.'

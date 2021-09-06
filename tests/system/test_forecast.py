@@ -74,7 +74,7 @@ class ForecastTest(SystemBase):
         :return: None
         """
         with self.test_client() as test_client:
-            response = test_client.get('/forecast/London?unit=kelvin')
+            response = test_client.get('/forecast/London?unit=standard')
             data = response.json
             temperature = data['temperature']
             self.assertEqual(

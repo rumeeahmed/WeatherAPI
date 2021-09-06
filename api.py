@@ -9,7 +9,7 @@ api = Api(app)
 load_dotenv()
 
 api.add_resource(Ping, '/ping')
-api.add_resource(Forecast, '/forecast/<city>')
+api.add_resource(Forecast, '/forecast/<string:city>')
 
 if __name__ == '__main__':
     app.run(debug=False, port=5005)
